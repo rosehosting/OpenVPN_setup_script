@@ -115,7 +115,7 @@ iptables-save > /etc/iptables.conf
 
 cat > /etc/network/if-up.d/iptables <<EOF
 #!/bin/sh
-iptables-restore
+iptables-restore < /etc/iptables.conf
 EOF
 
 chmod +x /etc/network/if-up.d/iptables
