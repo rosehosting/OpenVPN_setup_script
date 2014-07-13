@@ -42,7 +42,7 @@ openssl dhparam -out /etc/openvpn/dh.pem 2048 > /dev/null 2>&1
 openssl genrsa -out /etc/openvpn/ca-key.pem 2048 > /dev/null 2>&1
 chmod 600 /etc/openvpn/ca-key.pem
 openssl req -new -key /etc/openvpn/ca-key.pem -out /etc/openvpn/ca-csr.pem -subj /CN=OpenVPN-CA/ > /dev/null 2>&1
-openssl x509 -req -in /etc/openvpn/ca-csr.pem -out /etc/openvpn/ca.pem -signkey /etc/openvpn/ca-key.pem -days 36525 > /dev/null 2>&1
+openssl x509 -req -in /etc/openvpn/ca-csr.pem -out /etc/openvpn/ca.pem -signkey /etc/openvpn/ca-key.pem -days 365 > /dev/null 2>&1
 echo 01 > /etc/openvpn/ca.srl
 
 # Generate Server Config
@@ -50,7 +50,7 @@ ok "❯❯❯ Generating Server Config"
 openssl genrsa -out /etc/openvpn/server-key.pem 2048 > /dev/null 2>&1
 chmod 600 /etc/openvpn/server-key.pem
 openssl req -new -key /etc/openvpn/server-key.pem -out /etc/openvpn/server-csr.pem -subj /CN=OpenVPN/ > /dev/null 2>&1
-openssl x509 -req -in /etc/openvpn/server-csr.pem -out /etc/openvpn/server-cert.pem -CA /etc/openvpn/ca.pem -CAkey /etc/openvpn/ca-key.pem -days 36525 > /dev/null 2>&1
+openssl x509 -req -in /etc/openvpn/server-csr.pem -out /etc/openvpn/server-cert.pem -CA /etc/openvpn/ca.pem -CAkey /etc/openvpn/ca-key.pem -days 365 > /dev/null 2>&1
 
 cat > /etc/openvpn/udp1194.conf <<EOF
 server 10.8.0.0 255.255.255.0
@@ -106,7 +106,7 @@ EOF
 # Iptables
 if [[ ! -f /proc/user_beancounters ]]; then
     N_INT = $(ip a |awk -v sip="$SERVER_IP" '$0 ~ sip { print $7}')
-    iptables -t nat -A POSTROUTING -s 10.1.0.0/24 -o $N_INT -j MASQUERADE
+    iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $N_INT -j MASQUERADE
 else
     iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $SERVER_IP
 fi
