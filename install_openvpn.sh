@@ -105,7 +105,7 @@ EOF
 
 # Iptables
 if [[ ! -f /proc/user_beancounters ]]; then
-    N_INT = $(ip a |awk -v sip="$SERVER_IP" '$0 ~ sip { print $7}')
+    N_INT=$(ip a |awk -v sip="$SERVER_IP" '$0 ~ sip { print $7}')
     iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $N_INT -j MASQUERADE
 else
     iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to-source $SERVER_IP
